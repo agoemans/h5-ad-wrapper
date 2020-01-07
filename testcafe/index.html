@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Cafe</title>
+    <script type="text/javascript" src="h5-ad-wrapper.umd.js"></script>
+    <script>
+        function setup() {
+            h5ads.adWrapper.setAdProvider(new h5ads.GameDistribution(
+                '8b63540b9b7549aaa044fcae7dfae2fe' //Your game id goes here
+            ));
+
+            h5ads.adWrapper.on(h5ads.AdEvents.AD_PROVIDER_LOADED, function () {
+                console.error('Ads Provider loaded and ready.');
+                document.getElementById('loaded').innerText = 'loaded';
+
+                gdsdk.openConsole();
+
+                localStorage.setItem('gd_debug_ex', true)
+                localStorage.setItem('gd_disable_midroll_timer', true)
+                localStorage.setItem('gd_tag', true)
+                console.log(localStorage)
+            });
+
+            console.log('-----------------------------------setup')
+        }
+    </script>
+    <style type="text/css">
+        body {
+            margin: 0 auto;
+            padding: 0;
+        }
+    </style>
+</head>
+<body onload="setup()">
+<script>
+    function showAd() {
+        h5ads.adWrapper.on(h5ads.AdEvents.CONTENT_PAUSED,function () {
+            console.error('Started playing ad.');
+            document.getElementById('started').innerText = 'started';
+        });
+
+        //This is fired when the ad is finished playing and the content (game) should be resumed
+        h5ads.adWrapper.on(h5ads.AdEvents.CONTENT_RESUMED, function () {
+            console.error('Finished playing ad.');
+            document.getElementById('finished').innerText = 'finished';
+        });
+
+        //This is fired when the ad was clicked by the user
+        h5ads.adWrapper.on(h5ads.AdEvents.AD_CLICKED,function () {
+            console.error('Clicked the ad!');
+        });
+
+        h5ads.adWrapper.on(h5ads.AdEvents.AD_REWARDED, function () {
+            console.error('Received ad reward!.');
+        });
+
+        //This gives us details about how far the users is viewing the add
+        h5ads.adWrapper.on(h5ads.AdEvents.AD_DISABLED,function (progression) {
+            console.error(progression);
+        });
+
+        //This is fired when the ad was clicked by the user
+        h5ads.adWrapper.on(h5ads.AdEvents.AD_DISABLED, function () {
+            console.error('Ads are being blocked.');
+        });            //This is fired when the ad was clicked by the user
+
+        h5ads.adWrapper.showAd(h5ads.AdType.interstitial);
+    }
+</script>
+<input type="button" id="setup-provider" value="setup" onclick="setup()">
+<input type="button" id="show-ad" value="showAd" onclick="showAd()">
+<h3 id="loaded"></h3>
+<h3 id="started"></h3>
+<h3 id="finished"></h3>
+<div id="content-wrapper">
+    <div id="game-container" style="width: 100%; height:100%"></div>
+</div>
+</body>
+</html>
